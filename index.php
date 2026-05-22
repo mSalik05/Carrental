@@ -1,140 +1,95 @@
-<?php 
+<?php
 session_start();
 include('includes/config.php');
-error_reporting(0);
-
-?>
-
-<!DOCTYPE HTML>
-<html lang="en">
-<head>
-
-<title>Car Rental Portal </title>
-<!--Bootstrap -->
-<link rel="stylesheet" href="assets/css/bootstrap.min.css" type="text/css">
-<link rel="stylesheet" href="assets/css/style.css" type="text/css">
-<link rel="stylesheet" href="assets/css/owl.carousel.css" type="text/css">
-<link rel="stylesheet" href="assets/css/owl.transitions.css" type="text/css">
-<link href="assets/css/slick.css" rel="stylesheet">
-<link href="assets/css/bootstrap-slider.min.css" rel="stylesheet">
-<link href="assets/css/font-awesome.min.css" rel="stylesheet">
-<link rel="apple-touch-icon-precomposed" sizes="144x144" href="assets/images/favicon-icon/apple-touch-icon-144-precomposed.png">
-<link rel="apple-touch-icon-precomposed" sizes="114x114" href="assets/images/favicon-icon/apple-touch-icon-114-precomposed.html">
-<link rel="apple-touch-icon-precomposed" sizes="72x72" href="assets/images/favicon-icon/apple-touch-icon-72-precomposed.png">
-<link rel="apple-touch-icon-precomposed" href="assets/images/favicon-icon/apple-touch-icon-57-precomposed.png">
-<link rel="shortcut icon" href="assets/images/favicon-icon/favicon.png">
-<link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,900" rel="stylesheet"> 
-</head>
-<body>
-
-
-        
-<!--Header-->
-<?php include('includes/header.php');?>
-<!-- /Header --> 
-
-<!-- Banners -->
-<section id="banner" class="banner-section">
-  <div class="container">
-    <div class="div_zindex">
-      <div class="row">
-        <div class="col-md-5 col-md-push-7">
-          <div class="banner_content">
-            <h1>&nbsp;</h1>
-            <p>&nbsp; </p>
-            </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-<!-- /Banners --> 
-
-
-<!-- Resent Cat-->
-<section class="section-padding gray-bg">
-  <div class="container">
-    <div class="section-header text-center">
-      <h2>Find the Best <span>CarForYou</span></h2>
-      <p>Welcome to Kashmir's first online car rental service, where convenience meets quality. We offer a diverse fleet of well-maintained vehicles at competitive rates to suit all your travel needs. Enjoy flexible rental options and exceptional customer service for a seamless experience. Choose us for your next journey and drive with confidence.</p>
-    </div>
-    <div class="row"> 
-      
-      
-      
-      <!-- Recently Listed New Cars -->
-      <div class="tab-content">
-        <div role="tabpanel" class="tab-pane active" id="resentnewcar">
-
-<?php $sql = "SELECT tblvehicles.VehiclesTitle,tblbrands.BrandName,tblvehicles.PricePerDay,tblvehicles.FuelType,tblvehicles.ModelYear,tblvehicles.id,tblvehicles.SeatingCapacity,tblvehicles.VehiclesOverview,tblvehicles.Vimage1 from tblvehicles join tblbrands on tblbrands.id=tblvehicles.VehiclesBrand limit 9";
-$query = $dbh -> prepare($sql);
-$query->execute();
+if(isset($_POST['login']))
+{
+$email=$_POST['username'];
+$password=md5($_POST['password']);
+$sql ="SELECT UserName,Password FROM admin WHERE UserName=:email and Password=:password";
+$query= $dbh -> prepare($sql);
+$query-> bindParam(':email', $email, PDO::PARAM_STR);
+$query-> bindParam(':password', $password, PDO::PARAM_STR);
+$query-> execute();
 $results=$query->fetchAll(PDO::FETCH_OBJ);
-$cnt=1;
 if($query->rowCount() > 0)
 {
-foreach($results as $result)
-{  
-?>  
+$_SESSION['alogin']=$_POST['username'];
+echo "<script type='text/javascript'> document.location = 'dashboard.php'; </script>";
+} else{
+  
+  echo "<script>alert('Invalid Details');</script>";
 
-<div class="col-list-3">
-<div class="recent-car-list">
-<div class="car-info-box"> <a href="vehical-details.php?vhid=<?php echo htmlentities($result->id);?>"><img src="admin/img/vehicleimages/<?php echo htmlentities($result->Vimage1);?>" class="img-responsive" alt="image"></a>
-<ul>
-<li><i class="fa fa-car" aria-hidden="true"></i><?php echo htmlentities($result->FuelType);?></li>
-<li><i class="fa fa-calendar" aria-hidden="true"></i><?php echo htmlentities($result->ModelYear);?> Model</li>
-<li><i class="fa fa-user" aria-hidden="true"></i><?php echo htmlentities($result->SeatingCapacity);?> seats</li>
-</ul>
-</div>
-<div class="car-title-m">
-<h6><a href="vehical-details.php?vhid=<?php echo htmlentities($result->id);?>"> <?php echo htmlentities($result->VehiclesTitle);?></a></h6>
-<span class="price">₹<?php echo htmlentities($result->PricePerDay);?> /Day</span> 
-</div>
-<div class="inventory_info_m">
-<p><?php echo substr($result->VehiclesOverview,0,70);?></p>
-</div>
-</div>
-</div>
-<?php }}?>
-       
-      </div>
-    </div>
-  </div>
-</section>
-<!-- /Resent Cat --> 
+}
 
-<!--Footer -->
-<?php include('includes/footer.php');?>
-<!-- /Footer--> 
+}
 
-<!--Back to top-->
-<div id="back-top" class="back-top"> <a href="#top"><i class="fa fa-angle-up" aria-hidden="true"></i> </a> </div>
-<!--/Back to top--> 
+?>
+<!doctype html>
+<html lang="en" class="no-js">
 
-<!--Login-Form -->
-<?php include('includes/login.php');?>
-<!--/Login-Form --> 
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
 
-<!--Register-Form -->
-<?php include('includes/registration.php');?>
+	<title>Car Rental Portal | Admin Login</title>
+	<link rel="stylesheet" href="css/font-awesome.min.css">
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/dataTables.bootstrap.min.css">
+	<link rel="stylesheet" href="css/bootstrap-social.css">
+	<link rel="stylesheet" href="css/bootstrap-select.css">
+	<link rel="stylesheet" href="css/fileinput.min.css">
+	<link rel="stylesheet" href="css/awesome-bootstrap-checkbox.css">
+	<link rel="stylesheet" href="css/style.css">
+</head>
 
-<!--/Register-Form --> 
+<body>
+	
+	<div class="login-page bk-img" style="background-image: url(img/login-bg.jpg);">
+		<div class="form-content">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-6 col-md-offset-3">
+						<h1 class="text-center text-bold mt-4x" style="color:#fff">Admin | Sign in</h1>
+						<div class="well row pt-2x pb-3x bk-light">
+							<div class="col-md-8 col-md-offset-2">
+								<form method="post">
 
-<!--Forgot-password-Form -->
-<?php include('includes/forgotpassword.php');?>
-<!--/Forgot-password-Form --> 
+									<label for="" class="text-uppercase text-sm">Your Username </label>
+									<input type="text" placeholder="Username" name="username" class="form-control mb">
 
-<!-- Scripts --> 
-<script src="assets/js/jquery.min.js"></script>
-<script src="assets/js/bootstrap.min.js"></script> 
-<script src="assets/js/interface.js"></script> 
-<!--Switcher-->
-<script src="assets/switcher/js/switcher.js"></script>
-<!--bootstrap-slider-JS--> 
-<script src="assets/js/bootstrap-slider.min.js"></script> 
-<!--Slider-JS--> 
-<script src="assets/js/slick.min.js"></script> 
-<script src="assets/js/owl.carousel.min.js"></script>
+									<label for="" class="text-uppercase text-sm">Password</label>
+									<input type="password" placeholder="Password" name="password" class="form-control mb">
+		
+
+									<button class="btn btn-primary btn-block" name="login" type="submit">LOGIN</button>
+
+								</form>
+
+			<p style="margin-top: 4%" align="center"><a href="../index.php">Back to Home</a>	</p>
+							</div>
+
+						</div>
+							
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- Loading Scripts -->
+	<script src="js/jquery.min.js"></script>
+	<script src="js/bootstrap-select.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/jquery.dataTables.min.js"></script>
+	<script src="js/dataTables.bootstrap.min.js"></script>
+	<script src="js/Chart.min.js"></script>
+	<script src="js/fileinput.js"></script>
+	<script src="js/chartData.js"></script>
+	<script src="js/main.js"></script>
 
 </body>
+
 </html>
